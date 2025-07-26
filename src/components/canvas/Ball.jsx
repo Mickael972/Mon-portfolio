@@ -25,24 +25,34 @@ const Ball = (props) => {
           polygonOffsetFactor={-5}
           flatShading
         />
-        <Decal
-          position={[0, 0, 1]}
-          rotation={[2 * Math.PI, 0, 6.25]}
-          scale={1}
-          map={decal}
-          flatShading
-        />
+        {decal && (
+          <Decal
+            position={[0, 0, 1]}
+            rotation={[2 * Math.PI, 0, 6.25]}
+            scale={1}
+            map={decal}
+            flatShading
+          />
+        )}
       </mesh>
     </Float>
   );
 };
 
 const BallCanvas = ({ icon }) => {
+  // Validation de l'icône
+  if (!icon) {
+    return null;
+  }
+
   return (
     <Canvas
       frameloop='demand'
       dpr={[1, 2]}
       gl={{ preserveDrawingBuffer: true }}
+      onError={(error) => {
+        console.warn("Erreur Three.js dans BallCanvas:", error);
+      }}
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls enableZoom={false} />

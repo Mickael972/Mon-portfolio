@@ -3,7 +3,12 @@ import { About, Contact, Documents, Hero, Navbar, StarsCanvas, Tech, Works } fro
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter 
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true
+      }}
+    >
       <div className="relative z-0 bg-primary">
         <div className="bg-hero-pattern bg-cover bg-center bg-no-repeat">
           <Navbar />

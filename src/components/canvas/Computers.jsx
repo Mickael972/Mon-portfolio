@@ -7,6 +7,40 @@ import CanvasLoader from "../Loader";
 const Computers = ({ isMobile }) => {
   const computer = useGLTF("./desktop_pc/scene.gltf");
 
+  // Validation pour éviter les erreurs NaN
+  React.useEffect(() => {
+    if (computer.scene) {
+      try {
+        computer.scene.traverse((child) => {
+          if (child.geometry) {
+            try {
+              // Vérifier et corriger tous les attributs de géométrie
+              Object.keys(child.geometry.attributes).forEach(attributeName => {
+                const attribute = child.geometry.attributes[attributeName];
+                if (attribute && attribute.array) {
+                  for (let i = 0; i < attribute.array.length; i++) {
+                    if (isNaN(attribute.array[i]) || !isFinite(attribute.array[i])) {
+                      attribute.array[i] = 0;
+                    }
+                  }
+                  attribute.needsUpdate = true;
+                }
+              });
+              
+              // Recalculer les bounding sphere et box de manière sécurisée
+              child.geometry.computeBoundingSphere();
+              child.geometry.computeBoundingBox();
+            } catch (geometryError) {
+              console.warn("Erreur lors de la correction de géométrie:", geometryError);
+            }
+          }
+        });
+      } catch (error) {
+        console.warn("Erreur lors du traitement du modèle Computer:", error);
+      }
+    }
+  }, [computer.scene]);
+
   return (
     <mesh>
       <hemisphereLight intensity={3} groundColor='black' />
@@ -60,6 +94,9 @@ const ComputersCanvas = () => {
       dpr={[1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
       gl={{ preserveDrawingBuffer: true }}
+      onError={(error) => {
+        console.warn("Erreur Three.js dans ComputersCanvas:", error);
+      }}
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
