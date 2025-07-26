@@ -4,6 +4,7 @@ import { About, Contact, Documents, Hero, Navbar, StarsCanvas, Tech, Works } fro
 const App = () => {
   return (
     <BrowserRouter 
+      basename="/Mon-portfolio"
       future={{
         v7_startTransition: true,
         v7_relativeSplatPath: true
