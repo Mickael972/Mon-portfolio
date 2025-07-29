@@ -60,8 +60,8 @@ const Computers = ({ isMobile, onReady }) => {
       <pointLight intensity={1} />
       <primitive
         object={computer.scene}
-        scale={isMobile ? 0.7 : 0.75}
-        position={isMobile ? [0, -3, -2.2] : [0, -3.25, -1.5]}
+        scale={isMobile ? 0.6 : 0.75}
+        position={isMobile ? [0, -3, -2.2] : [0, -3.5, -1.5]}
         rotation={[-0.01, -0.2, -0.1]}
       />
     </mesh>
@@ -123,21 +123,9 @@ const ComputersCanvas = ({ onError, onReady }) => {
         alpha: true,
         powerPreference: "high-performance"
       }}
-      onCreated={({ gl, scene, camera }) => {
-        console.log("🎮 Canvas créé");
-        // Test WebGL au moment de la création
-        try {
-          const extension = gl.getExtension('WEBGL_debug_renderer_info');
-          if (extension) {
-            const renderer = gl.getParameter(extension.UNMASKED_RENDERER_WEBGL);
-            console.log('GPU Renderer:', renderer);
-          }
-          console.log('WebGL Version:', gl.getParameter(gl.VERSION));
-          console.log('Canvas size:', gl.canvas.width, 'x', gl.canvas.height);
-        } catch (error) {
-          console.warn("Impossible de détecter le GPU:", error);
-          // Ne pas déclencher onError pour ça, c'est juste informatif
-        }
+      onCreated={({ gl }) => {
+        console.log("🎮 Canvas 3D créé avec succès");
+        // Pas de diagnostic GPU - trop problématique
       }}
       onError={handleCanvasError}
     >
