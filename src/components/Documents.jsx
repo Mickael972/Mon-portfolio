@@ -6,12 +6,25 @@ import { fadeIn, textVariant } from "../utils/motion";
 
 const DocumentCard = ({ index, title, description, icon, downloadLink, fileName }) => {
   const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = downloadLink;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      // Utiliser le chemin complet avec le basename
+      const fullPath = `${import.meta.env.BASE_URL || '/'}${downloadLink}`;
+      
+      const link = document.createElement('a');
+      link.href = fullPath;
+      link.download = fileName;
+      link.target = '_blank'; // Ouvrir dans un nouvel onglet si le téléchargement échoue
+      link.rel = 'noopener noreferrer';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Erreur lors du téléchargement:', error);
+      // Fallback: ouvrir le document dans un nouvel onglet
+      const fallbackPath = `${import.meta.env.BASE_URL || '/'}${downloadLink}`;
+      window.open(fallbackPath, '_blank');
+    }
   };
 
   return (
@@ -40,21 +53,21 @@ const Documents = () => {
       title: "CV Mickael Juste",
       description: "Curriculum Vitae - Développeur Junior",
       icon: "📄",
-      downloadLink: "/documents/Mickael Juste CV.pdf",
+      downloadLink: "documents/Mickael Juste CV.pdf",
       fileName: "Mickael-Juste-CV.pdf"
     },
     {
       title: "Lettre de recommandation 1",
       description: "Recommandation - Ludovic Butet (AtooSystem)",
       icon: "📋",
-      downloadLink: "/documents/lettre-recommandation-1.pdf",
+      downloadLink: "documents/lettre-recommandation-1.pdf",
       fileName: "Lettre-Recommandation-1.pdf"
     },
     {
       title: "Lettre de recommandation 2", 
       description: "Recommandation - Charlotte Dressayre (DCSeasyware)",
       icon: "📋",
-      downloadLink: "/documents/lettre-recommandation-2.pdf",
+      downloadLink: "documents/lettre-recommandation-2.pdf",
       fileName: "Lettre-Recommandation-2.pdf"
     }
   ];
