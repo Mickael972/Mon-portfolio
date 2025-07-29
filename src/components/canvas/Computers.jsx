@@ -65,6 +65,7 @@ const Computers = ({ isMobile }) => {
 
 const ComputersCanvas = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     // Add a listener for changes to the screen size
@@ -87,22 +88,50 @@ const ComputersCanvas = () => {
     };
   }, []);
 
+  // Gestion d'erreurs améliorée
+  const handleCanvasError = (error) => {
+    console.warn("Erreur WebGL détectée:", error);
+    setHasError(true);
+  };
+
+  // Si une erreur WebGL est détectée, ne pas afficher le Canvas
+  if (hasError) {
+    return null;
+  }
+
   return (
     <Canvas
       frameloop='demand'
       shadows
       dpr={[1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
-      gl={{ preserveDrawingBuffer: true }}
-      onError={(error) => {
-        console.warn("Erreur Three.js dans ComputersCanvas:", error);
+      gl={{ 
+        preserveDrawingBuffer: true,
+        antialias: false, // Désactiver l'antialiasing pour les performances sur mobile
+        alpha: true,
+        powerPreference: "high-performance"
       }}
+      onCreated={({ gl }) => {
+        // Test WebGL au moment de la création
+        try {
+          const extension = gl.getExtension('WEBGL_debug_renderer_info');
+          if (extension) {
+            const renderer = gl.getParameter(extension.UNMASKED_RENDERER_WEBGL);
+            console.log('GPU Renderer:', renderer);
+          }
+        } catch (error) {
+          console.warn("Impossible de détecter le GPU:", error);
+        }
+      }}
+      onError={handleCanvasError}
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           enableZoom={false}
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}
+          enableDamping={true}
+          dampingFactor={0.1}
         />
         <Computers isMobile={isMobile} />
       </Suspense>
