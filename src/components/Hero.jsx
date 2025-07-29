@@ -1,47 +1,31 @@
 import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 import { styles } from '../styles'
 import { ComputersCanvas } from './canvas'
 
-// Fonction pour détecter le support WebGL
-const isWebGLSupported = () => {
-  try {
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    return !!gl;
-  } catch (e) {
-    return false;
-  }
-};
-
-// Fonction pour détecter Android
-const isAndroid = () => {
-  return /Android/i.test(navigator.userAgent);
-};
-
 const Hero = () => {
-  const [webGLSupported, setWebGLSupported] = useState(true);
-  const [isAndroidDevice, setIsAndroidDevice] = useState(false);
+  const [showFallback, setShowFallback] = useState(false);
 
-  useEffect(() => {
-    setWebGLSupported(isWebGLSupported());
-    setIsAndroidDevice(isAndroid());
-  }, []);
+  // Fonction pour gérer les erreurs du Canvas
+  const handleCanvasError = () => {
+    console.warn("Erreur Canvas détectée, passage au mode fallback");
+    setShowFallback(true);
+  };
 
   return (
     <section className="relative w-full min-h-screen mx-auto overflow-hidden">
-      {/* Version améliorée pour mobile avec fallback */}
+      {/* Background avec image hero */}
       <div 
         className="absolute inset-0 w-full h-full bg-hero-pattern bg-cover bg-center bg-no-repeat"
         style={{
-          // Fallback pour les appareils qui ne chargent pas l'image correctement
-          background: !webGLSupported || isAndroidDevice 
+          // Fallback gradient seulement si vraiment nécessaire
+          background: showFallback 
             ? 'linear-gradient(135deg, #050816 0%, #151030 50%, #050816 100%)' 
             : undefined,
-          // Assurer une hauteur minimale sur Android
-          minHeight: isAndroidDevice ? '100vh' : 'auto',
-          // Améliorer les performances sur mobile
+          // Assurer une hauteur minimale sur mobile
+          minHeight: '100vh',
+          // Améliorer les performances
           willChange: 'auto',
           transform: 'translateZ(0)', // Force hardware acceleration
         }}
@@ -64,11 +48,13 @@ const Hero = () => {
         </div>
       </div>
       
-      {/* Canvas avec détection WebGL et fallback */}
-      {webGLSupported && !isAndroidDevice ? (
-        <ComputersCanvas />
+      {/* Canvas avec positionnement correct */}
+      {!showFallback ? (
+        <div className="absolute inset-0 z-0">
+          <ComputersCanvas onError={handleCanvasError} />
+        </div>
       ) : (
-        // Fallback pour Android ou appareils sans WebGL
+        // Fallback uniquement si WebGL ne fonctionne pas du tout
         <div className="absolute inset-0 flex items-center justify-center z-0">
           <div 
             className="w-full h-full opacity-20"
@@ -82,7 +68,7 @@ const Hero = () => {
         </div>
       )}
 
-      {/* Indicateur de scroll amélioré pour mobile */}
+      {/* Indicateur de scroll */}
       <div className="absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center z-20">
         <a href='#about'>
           <div className='w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2'>

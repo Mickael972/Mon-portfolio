@@ -63,9 +63,8 @@ const Computers = ({ isMobile }) => {
   );
 };
 
-const ComputersCanvas = () => {
+const ComputersCanvas = ({ onError }) => {
   const [isMobile, setIsMobile] = useState(false);
-  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     // Add a listener for changes to the screen size
@@ -88,16 +87,13 @@ const ComputersCanvas = () => {
     };
   }, []);
 
-  // Gestion d'erreurs améliorée
+  // Gestion d'erreurs qui remonte au parent
   const handleCanvasError = (error) => {
     console.warn("Erreur WebGL détectée:", error);
-    setHasError(true);
+    if (onError) {
+      onError(error);
+    }
   };
-
-  // Si une erreur WebGL est détectée, ne pas afficher le Canvas
-  if (hasError) {
-    return null;
-  }
 
   return (
     <Canvas
@@ -121,6 +117,7 @@ const ComputersCanvas = () => {
           }
         } catch (error) {
           console.warn("Impossible de détecter le GPU:", error);
+          // Ne pas déclencher onError pour ça, c'est juste informatif
         }
       }}
       onError={handleCanvasError}
