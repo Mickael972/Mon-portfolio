@@ -6,30 +6,55 @@ import { ComputersCanvas } from './canvas'
 
 const Hero = () => {
   const [showFallback, setShowFallback] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fonction pour gérer les erreurs du Canvas
   const handleCanvasError = () => {
     console.warn("Erreur Canvas détectée, passage au mode fallback");
     setShowFallback(true);
+    setIsLoading(false);
+  };
+
+  // Fonction pour gérer la fin du chargement
+  const handleCanvasReady = () => {
+    setIsLoading(false);
   };
 
   return (
     <section className="relative w-full min-h-screen mx-auto overflow-hidden">
-      {/* Background avec image hero */}
+      {/* Background principal - toujours présent pour éviter les flashs */}
+      <div 
+        className="absolute inset-0 w-full h-full"
+        style={{
+          // Background de base toujours présent
+          background: 'linear-gradient(135deg, #050816 0%, #151030 50%, #050816 100%)',
+          minHeight: '100vh',
+          willChange: 'auto',
+          transform: 'translateZ(0)',
+        }}
+      />
+      
+      {/* Background pattern qui se superpose */}
       <div 
         className="absolute inset-0 w-full h-full bg-hero-pattern bg-cover bg-center bg-no-repeat"
         style={{
-          // Fallback gradient seulement si vraiment nécessaire
-          background: showFallback 
-            ? 'linear-gradient(135deg, #050816 0%, #151030 50%, #050816 100%)' 
-            : undefined,
-          // Assurer une hauteur minimale sur mobile
+          opacity: showFallback ? 0 : 1,
+          transition: 'opacity 0.3s ease-in-out',
           minHeight: '100vh',
-          // Améliorer les performances
-          willChange: 'auto',
-          transform: 'translateZ(0)', // Force hardware acceleration
         }}
       />
+      
+      {/* Overlay de chargement pour éviter les flashs sur Android */}
+      {isLoading && !showFallback && (
+        <div 
+          className="absolute inset-0 z-5"
+          style={{
+            background: 'linear-gradient(135deg, #050816 0%, #151030 50%, #050816 100%)',
+            opacity: 0.8,
+            transition: 'opacity 0.5s ease-out',
+          }}
+        />
+      )}
       
       <div className={`${styles.paddingX} absolute inset-0 top-[120px] max-w-7xl mx-auto flex flex-row items-start gap-5 z-10`}>
         <div className="flex flex-col justify-center items-center mt-5">
@@ -51,7 +76,10 @@ const Hero = () => {
       {/* Canvas avec positionnement correct */}
       {!showFallback ? (
         <div className="absolute inset-0 z-0">
-          <ComputersCanvas onError={handleCanvasError} />
+          <ComputersCanvas 
+            onError={handleCanvasError}
+            onReady={handleCanvasReady}
+          />
         </div>
       ) : (
         // Fallback uniquement si WebGL ne fonctionne pas du tout

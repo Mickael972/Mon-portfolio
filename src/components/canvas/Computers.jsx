@@ -4,7 +4,7 @@ import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
 
-const Computers = ({ isMobile }) => {
+const Computers = ({ isMobile, onReady }) => {
   const computer = useGLTF("./desktop_pc/scene.gltf");
 
   // Validation pour éviter les erreurs NaN
@@ -35,11 +35,16 @@ const Computers = ({ isMobile }) => {
             }
           }
         });
+        
+        // Signaler que le modèle est prêt après traitement
+        if (onReady) {
+          setTimeout(() => onReady(), 100); // Petit délai pour s'assurer que tout est rendu
+        }
       } catch (error) {
         console.warn("Erreur lors du traitement du modèle Computer:", error);
       }
     }
-  }, [computer.scene]);
+  }, [computer.scene, onReady]);
 
   return (
     <mesh>
@@ -63,8 +68,9 @@ const Computers = ({ isMobile }) => {
   );
 };
 
-const ComputersCanvas = ({ onError }) => {
+const ComputersCanvas = ({ onError, onReady }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const [modelReady, setModelReady] = useState(false);
 
   useEffect(() => {
     // Add a listener for changes to the screen size
@@ -92,6 +98,14 @@ const ComputersCanvas = ({ onError }) => {
     console.warn("Erreur WebGL détectée:", error);
     if (onError) {
       onError(error);
+    }
+  };
+
+  // Callback quand le modèle est prêt
+  const handleModelReady = () => {
+    setModelReady(true);
+    if (onReady) {
+      onReady();
     }
   };
 
@@ -130,7 +144,10 @@ const ComputersCanvas = ({ onError }) => {
           enableDamping={true}
           dampingFactor={0.1}
         />
-        <Computers isMobile={isMobile} />
+        <Computers 
+          isMobile={isMobile} 
+          onReady={handleModelReady}
+        />
       </Suspense>
 
       <Preload all />
