@@ -78,6 +78,7 @@ const ComputersCanvas = ({ onError, onReady }) => {
 
     // Set the initial value of the `isMobile` state variable
     setIsMobile(mediaQuery.matches);
+    console.log("Mobile detected:", mediaQuery.matches);
 
     // Define a callback function to handle changes to the media query
     const handleMediaQueryChange = (event) => {
@@ -95,7 +96,7 @@ const ComputersCanvas = ({ onError, onReady }) => {
 
   // Gestion d'erreurs qui remonte au parent
   const handleCanvasError = (error) => {
-    console.warn("Erreur WebGL détectée:", error);
+    console.error("❌ Erreur WebGL détectée:", error);
     if (onError) {
       onError(error);
     }
@@ -103,6 +104,7 @@ const ComputersCanvas = ({ onError, onReady }) => {
 
   // Callback quand le modèle est prêt
   const handleModelReady = () => {
+    console.log("✅ Modèle 3D prêt");
     setModelReady(true);
     if (onReady) {
       onReady();
@@ -121,7 +123,8 @@ const ComputersCanvas = ({ onError, onReady }) => {
         alpha: true,
         powerPreference: "high-performance"
       }}
-      onCreated={({ gl }) => {
+      onCreated={({ gl, scene, camera }) => {
+        console.log("🎮 Canvas créé");
         // Test WebGL au moment de la création
         try {
           const extension = gl.getExtension('WEBGL_debug_renderer_info');
@@ -129,6 +132,8 @@ const ComputersCanvas = ({ onError, onReady }) => {
             const renderer = gl.getParameter(extension.UNMASKED_RENDERER_WEBGL);
             console.log('GPU Renderer:', renderer);
           }
+          console.log('WebGL Version:', gl.getParameter(gl.VERSION));
+          console.log('Canvas size:', gl.canvas.width, 'x', gl.canvas.height);
         } catch (error) {
           console.warn("Impossible de détecter le GPU:", error);
           // Ne pas déclencher onError pour ça, c'est juste informatif
@@ -140,9 +145,12 @@ const ComputersCanvas = ({ onError, onReady }) => {
         <OrbitControls
           enableZoom={false}
           maxPolarAngle={Math.PI / 2}
-          minPolarAngle={Math.PI / 2}
+          minPolarAngle={Math.PI / 2.5}
           enableDamping={true}
           dampingFactor={0.1}
+          autoRotate={false}
+          enableRotate={true}
+          enablePan={false}
         />
         <Computers 
           isMobile={isMobile} 
