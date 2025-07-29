@@ -56,19 +56,21 @@ const Hero = () => {
         />
       )}
       
-      <div className={`${styles.paddingX} absolute inset-0 top-[120px] max-w-7xl mx-auto flex flex-row items-start gap-5 z-10`}>
-        <div className="flex flex-col justify-center items-center mt-5">
+      {/* Contenu principal - amélioré pour petits écrans */}
+      <div className={`${styles.paddingX} absolute inset-0 top-[100px] sm:top-[120px] max-w-7xl mx-auto flex flex-col sm:flex-row items-start gap-3 sm:gap-5 z-10 px-4 sm:px-6`}>
+        <div className="flex flex-col justify-center items-center mt-3 sm:mt-5 flex-shrink-0">
           <div className="w-5 h-5 rounded-full bg-[#915eff]" />
-          <div className='w-1 sm:h-80 h-40 violet-gradient' />
+          <div className='w-1 h-20 sm:h-40 md:h-80 violet-gradient' />
         </div>
 
-        <div>
-          <h1 className={`${styles.heroHeadText} text-white`}>
-            Bonjour, je suis <span className="text-[#915eff]">Mickael</span>
+        <div className="flex-1 w-full overflow-hidden">
+          <h1 className="font-black text-white text-[28px] xs:text-[40px] sm:text-[60px] lg:text-[80px] leading-[32px] xs:leading-[45px] sm:leading-[70px] lg:leading-[98px] mt-2">
+            <span className="block sm:inline">Bonjour, je suis </span>
+            <span className="text-[#915eff] block sm:inline">Mickael</span>
           </h1>
-          <p className={`${styles.heroSubText} mt-2 text-white-100`}>
-            Développeur junior passionné <br className="sm:block hidden" />
-            en recherche de stage pour m'épanouir.
+          <p className="text-[#dfd9ff] font-medium text-[14px] xs:text-[16px] sm:text-[26px] lg:text-[30px] leading-[18px] xs:leading-[20px] sm:leading-[32px] lg:leading-[40px] mt-2 max-w-full">
+            Développeur junior passionné <br className="hidden sm:block" />
+            <span className="block sm:inline">en recherche de stage pour m'épanouir.</span>
           </p> 
         </div>
       </div>
@@ -96,20 +98,20 @@ const Hero = () => {
         </div>
       )}
 
-      {/* Indicateur de scroll */}
-      <div className="absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center z-20">
+      {/* Indicateur de scroll - amélioré pour petits écrans */}
+      <div className="absolute bottom-8 xs:bottom-10 w-full flex justify-center items-center z-20">
         <a href='#about'>
-          <div className='w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2'>
+          <div className='w-[28px] h-[50px] xs:w-[35px] xs:h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2'>
             <motion.div
               animate={{
-                y: [0, 24, 0],
+                y: [0, 18, 0],
               }}
               transition={{
                 duration: 1.5,
                 repeat: Infinity,
                 repeatType: "loop",
               }}
-              className='w-3 h-3 rounded-full bg-secondary mb-1'
+              className='w-2 h-2 xs:w-3 xs:h-3 rounded-full bg-secondary mb-1'
             />
           </div>
         </a>
